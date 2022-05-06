@@ -23,9 +23,10 @@ namespace HightBackend.Controllers
         // GET: api/Events
         [HttpGet]
         public async Task<ActionResult<IQueryable<EventDto>>> GetEvents(
-            [FromQuery(Name = "sortrate")] string sortrate
-            )
+            [FromQuery(Name = "sortrate")] string sortrate)
         {
+
+
             var events = from b in _context.Events
                          select new EventDto()
                          {
@@ -38,11 +39,11 @@ namespace HightBackend.Controllers
 
             if (sortrate == "asc")
             {
-                events = events.OrderBy(b => b.time);
+                events = events.OrderBy(b => b.time).Take(4);
             }
             else if (sortrate == "desc")
             {
-                events = events.OrderByDescending(b => b.time);
+                events = events.OrderByDescending(b => b.time).Take(4);
             }
 
             return Ok(await events.ToListAsync());
@@ -59,6 +60,7 @@ namespace HightBackend.Controllers
                     title = b.title,
                     time = b.time,
                     eventImage = b.eventImage,
+                    description = b.description,
                     location = b.location,
                     price = b.price,
                     estabilishmentName = b.estabilishment.name

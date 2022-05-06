@@ -19,6 +19,8 @@ namespace HightBackend.Models
 
         public string location { get; set; }
 
+        public string description { get; set; }
+
         public string eventImage { get; set; }
 
         public int estabilishmentID { get; set; }

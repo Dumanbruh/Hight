@@ -3,15 +3,17 @@ using System;
 using HightBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace HightBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220506123107_init8")]
+    partial class init8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,28 +244,6 @@ namespace HightBackend.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("HightBackend.Models.usersFavourites", b =>
-                {
-                    b.Property<int>("favID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("estabilishmentID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("userID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("favID");
-
-                    b.HasIndex("estabilishmentID");
-
-                    b.HasIndex("userID");
-
-                    b.ToTable("usersFavourites");
-                });
-
             modelBuilder.Entity("HightBackend.Models.Comment", b =>
                 {
                     b.HasOne("HightBackend.Models.Estabilishment", "estabilishment")
@@ -314,25 +294,6 @@ namespace HightBackend.Migrations
                     b.Navigation("estabilishment");
                 });
 
-            modelBuilder.Entity("HightBackend.Models.usersFavourites", b =>
-                {
-                    b.HasOne("HightBackend.Models.Estabilishment", "estabilishment")
-                        .WithMany()
-                        .HasForeignKey("estabilishmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HightBackend.Models.User", "user")
-                        .WithMany("favourites")
-                        .HasForeignKey("userID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("estabilishment");
-
-                    b.Navigation("user");
-                });
-
             modelBuilder.Entity("HightBackend.Models.Estabilishment", b =>
                 {
                     b.Navigation("comments");
@@ -345,8 +306,6 @@ namespace HightBackend.Migrations
             modelBuilder.Entity("HightBackend.Models.User", b =>
                 {
                     b.Navigation("comments");
-
-                    b.Navigation("favourites");
                 });
 #pragma warning restore 612, 618
         }

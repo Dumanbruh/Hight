@@ -20,10 +20,12 @@ namespace HightBackend.Controllers
     {
         private readonly AppDbContext _context;
         public static Comment comment = new Comment();
+        private readonly IUserService _userService;
 
-        public EstabilishmentsController(AppDbContext context)
+        public EstabilishmentsController(AppDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -31,8 +33,12 @@ namespace HightBackend.Controllers
             [FromQuery(Name = "s")] string s,
             [FromQuery(Name = "sortname")] string sortname,
             [FromQuery(Name = "sortrate")] string sortrate,
-            [FromQuery(Name = "page")] int? querypage)
+            [FromQuery(Name = "page")] int? querypage,
+            [FromQuery(Name = "type")] string type)
         {
+            
+
+
             var estabilishments = from b in _context.Estabilishments
                                   select new EstabilishmentDto()
                                   {
@@ -40,11 +46,11 @@ namespace HightBackend.Controllers
                                       typeName = b.type.typeName,
                                       name = b.name,
                                       website = b.website,
-                                      reviewNum = b.reviewNum,
-                                      overallRating = b.overallRating,
+                                      reviewNum = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Count(),
+                                      overallRating = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Average(s => s.overallRating),
                                       location = b.location,
-                                      imageTitle = b.estabilishmentImage.FirstOrDefault().Title 
-                                  };
+                                      imageTitle = b.estabilishmentImage.FirstOrDefault().Title
+                                  };    
 
             if (!string.IsNullOrEmpty(s))   
             {
@@ -70,6 +76,10 @@ namespace HightBackend.Controllers
                 estabilishments = estabilishments.OrderByDescending(b => b.overallRating);
             }
 
+            if (!string.IsNullOrEmpty(type)) {
+                estabilishments = estabilishments.Where(b => b.typeName.Equals(type));
+            }
+
             int perPage = 10;
             int page = querypage.GetValueOrDefault(1) == 0 ? 1 : querypage.GetValueOrDefault(1);
             var total = estabilishments.Count();
@@ -90,13 +100,13 @@ namespace HightBackend.Controllers
                     typeName = b.type.typeName,
                     name = b.name,
                     website = b.website,
-                    reviewNum = b.reviewNum,
+                    reviewNum = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Count(),
                     description = b.description,
                     location = b.location,
-                    overallRating = b.overallRating,
-                    locationRating = b.locationRating,
-                    serviceRating = b.serviceRating,
-                    price_qualityRating = b.price_qualityRating,
+                    overallRating = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Average(d => d.overallRating),
+                    locationRating = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Average(d => d.locationRating),
+                    serviceRating = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Average(d => d.serviceRating),
+                    price_qualityRating = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Average(d => d.price_qualityRating),
                     events = b.events.Where(d => d.estabilishmentID == b.estabilishmentId).ToList(),
                     comments = b.comments.Where(d => d.estabilishmentID == b.estabilishmentId).ToList(),
                     estabilishmentImages = b.estabilishmentImage.Where(d => d.estabilishmentID == b.estabilishmentId).ToList()
@@ -110,6 +120,5 @@ namespace HightBackend.Controllers
             return Ok(estabilishments);
         }
 
-    
     }
 }

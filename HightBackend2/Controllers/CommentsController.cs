@@ -19,12 +19,12 @@ namespace HightBackend.Models.Dtos
     {
         public static Comment comment = new Comment();  
         private readonly AppDbContext _context;
-        private readonly ICommentService _commentService;
+        private readonly IUserService _userService;
 
-        public CommentsController(AppDbContext context, ICommentService commentService)
+        public CommentsController(AppDbContext context, IUserService userService)
         {
             _context = context;
-            _commentService = commentService;
+            _userService = userService;
 
         }
 
@@ -32,7 +32,7 @@ namespace HightBackend.Models.Dtos
         public ActionResult<Comment> GetUserComments()
         {
             var comments = from b in _context.comments
-                           where b.userID == _commentService.getUserId()
+                           where b.userID == _userService.getUserId()
                            select new CommentDto()
                            {
                                comment = b.comment,
@@ -43,7 +43,7 @@ namespace HightBackend.Models.Dtos
                                price_qualityRating = b.price_qualityRating
                            };
 
-            if (comment == null)
+            if (comments == null)
             {
                 return NotFound();
             }
@@ -54,7 +54,7 @@ namespace HightBackend.Models.Dtos
         [HttpPost("{id}"), Authorize]
         public async Task<ActionResult<Comment>> PostComment(int id, CommentDto commentDto)
         {
-            comment.userID = _commentService.getUserId();
+            comment.userID = _userService.getUserId();
             comment.comment = commentDto.comment;
             comment.publishedDate = DateTime.Now.Date;
             comment.overallRating = commentDto.overallRating;

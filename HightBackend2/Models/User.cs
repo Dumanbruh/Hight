@@ -20,5 +20,6 @@ namespace HightBackend.Models
 
         public ICollection<Comment> comments { get; set; }
 
+        public ICollection<usersFavourites> favourites { get; set;}
     }
 }

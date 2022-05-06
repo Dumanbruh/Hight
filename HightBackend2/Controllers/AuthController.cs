@@ -45,7 +45,7 @@ namespace HightBackend.Controllers
             user.Email = userDto.Email;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            
+
 
             if (UserExists(userDto.Email)) {
                 return BadRequest("Already exists");
@@ -55,13 +55,6 @@ namespace HightBackend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("User registered!");
-        }
-
-        [HttpGet, Authorize]
-        public ActionResult<string> GetMe()
-        {
-            var userName = _userService.getName();
-            return Ok(userName);
         }
 
 
@@ -87,6 +80,132 @@ namespace HightBackend.Controllers
                 Token = tokenString
             });
         }
+
+        [HttpPut, Authorize]
+        public async Task<IActionResult> PutUserInfo(UserDetailDto userinfo)
+        {
+
+            var userUpdate = _context.User.FirstOrDefault(u => u.userID == _userService.getUserId());
+
+            if (!string.IsNullOrEmpty(userinfo.Email)) {
+                userUpdate.Email = userinfo.Email; 
+            }
+            if (!string.IsNullOrEmpty(userinfo.Firstname))
+            {
+                userUpdate.FirstName = userinfo.Firstname;  
+            }
+            if (!string.IsNullOrEmpty(userinfo.Lastname))
+            {
+                userUpdate.LastName = userinfo.Lastname;
+            }
+
+            _context.Entry(userUpdate).State = EntityState.Modified;
+
+            if (userUpdate.FirstName == "string" || userUpdate.FirstName == null) {
+                _context.Entry(userUpdate).Property(x => x.FirstName).IsModified = false;
+            }
+
+            if (userUpdate.LastName == "string" || userUpdate.LastName == null)
+            {
+                _context.Entry(userUpdate).Property(x => x.LastName).IsModified = false;
+            }
+
+            if (userUpdate.Email == "string" || userUpdate.Email == null)
+            {
+                _context.Entry(userUpdate).Property(x => x.Email).IsModified = false;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(_userService.getUserId()))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok();
+        }
+
+
+
+        [HttpDelete("{id}"), Authorize]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await _context.User.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.User.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPost("favourites/{id}"), Authorize]
+        public async Task<ActionResult<Estabilishment>> AddUsersFavourites(int id)
+        {
+            usersFavourites usersFavourites = new usersFavourites();
+            usersFavourites.estabilishmentID = id;
+            usersFavourites.userID = _userService.getUserId();
+
+            _context.usersFavourites.Add(usersFavourites);
+            await _context.SaveChangesAsync();
+
+            return Ok(usersFavourites);
+        }
+
+        [HttpGet, Authorize]
+        [Route("favourites/")]
+        public async Task<ActionResult<Estabilishment>> GetUsersFavourites()
+        {
+            var favourites = from b in _context.Estabilishments
+                             join f in _context.usersFavourites on b.estabilishmentId equals f.estabilishmentID
+                             select new EstabilishmentDto() {
+                                 estabilishmentId = b.estabilishmentId,
+                                 typeName = b.type.typeName,
+                                 name = b.name,
+                                 website = b.website,
+                                 reviewNum = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Count(),
+                                 overallRating = _context.comments.Where(d => d.estabilishmentID == b.estabilishmentId).Average(s => s.overallRating),
+                                 location = b.location,
+                                 imageTitle = b.estabilishmentImage.FirstOrDefault().Title
+                             };
+
+
+            if (favourites == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(favourites);
+        }
+
+        [HttpDelete("favourites/{id}"), Authorize]
+        public async Task<IActionResult> DeleteUsersFavourites(int id)
+        {
+            var favourites = await _context.usersFavourites.FindAsync(id);
+            if (favourites == null)
+            {
+                return NotFound();
+            }
+
+            _context.usersFavourites.Remove(favourites);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+       
 
         private string CreateToken(User user)
         {
@@ -153,6 +272,11 @@ namespace HightBackend.Controllers
         private bool UserExists(string email)
         {
             return _context.User.Any(e => e.Email == email);
+        }
+
+        private bool UserExists(int id)
+        {
+            return _context.User.Any(e => e.userID == id);
         }
 
     }

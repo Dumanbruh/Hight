@@ -23,6 +23,8 @@ namespace HightBackend.Data
 
         public DbSet<Comment> comments { get; set; }
 
+        public DbSet<usersFavourites> usersFavourites { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

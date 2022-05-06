@@ -19,15 +19,15 @@ namespace HightBackend.Models.Dtos
 
         public string location { get; set; }
 
-        public float reviewNum { get; set; }
+        public float? reviewNum { get; set; }
 
-        public float overallRating { get; set; }
+        public float? overallRating { get; set; }
 
-        public float locationRating { get; set; }
+        public float? locationRating { get; set; }
 
-        public float serviceRating { get; set; }
+        public float? serviceRating { get; set; }
 
-        public float price_qualityRating { get; set; }
+        public float? price_qualityRating { get; set; }
 
         public List<Comment> comments { get; set; }
 

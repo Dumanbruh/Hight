@@ -43,8 +43,6 @@ namespace HightBackend
                 );
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICommentService, CommentService>();
-
 
             services.AddHttpContextAccessor();
 

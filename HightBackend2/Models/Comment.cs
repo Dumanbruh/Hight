@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace HightBackend.Models
@@ -12,13 +13,17 @@ namespace HightBackend.Models
 
         public DateTime publishedDate { get; set; }
 
-        public float overallRating { get; set; }
+        [DefaultValue(0)]
+        public float? overallRating { get; set; }
 
-        public float locationRating { get; set; }
+        [DefaultValue(0)]
+        public float? locationRating { get; set; }
 
-        public float serviceRating { get; set; }
+        [DefaultValue(0)]
+        public float? serviceRating { get; set; }
 
-        public float price_qualityRating { get; set; }
+        [DefaultValue(0)]
+        public float? price_qualityRating { get; set; }
 
         public int estabilishmentID { get; set; }
 

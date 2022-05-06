@@ -15,11 +15,11 @@ namespace HightBackend.Models.Dtos
 
         public string website { get; set; }
 
-        public float reviewNum { get; set; }
+        public float? reviewNum { get; set; }
 
         public string imageTitle { get; set; }
 
-        public float overallRating { get; set; }
+        public float? overallRating { get; set; }
 
 
         public string location { get; set; }

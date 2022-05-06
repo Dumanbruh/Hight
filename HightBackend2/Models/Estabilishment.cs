@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,15 +21,20 @@ namespace HightBackend.Models
 
         public string location { get; set; }
 
-        public float reviewNum { get; set; }
+        [DefaultValue(0)]
+        public float? reviewNum { get; set; }
 
-        public float overallRating { get; set; }
+        [DefaultValue(0)]
+        public float? overallRating { get; set; }
 
-        public float locationRating { get; set; }   
+        [DefaultValue(0)]
+        public float? locationRating { get; set; }
 
-        public float serviceRating { get; set; }
+        [DefaultValue(0)]
+        public float? serviceRating { get; set; }
 
-        public float price_qualityRating { get; set; }
+        [DefaultValue(0)]
+        public float? price_qualityRating { get; set; }
 
         public virtual EstabilishmentType type { get; set;}
 

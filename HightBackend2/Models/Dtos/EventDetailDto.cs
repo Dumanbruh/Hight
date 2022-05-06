@@ -19,6 +19,8 @@ namespace HightBackend.Models.Dtos
 
         public string eventImage { get; set; }
 
+        public string description { get; set; }
+
         public string estabilishmentName { get; set; }
     }
 }
