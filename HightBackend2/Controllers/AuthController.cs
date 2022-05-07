@@ -71,14 +71,26 @@ namespace HightBackend.Controllers
             var tokenString = CreateToken(user);
 
             // return basic user info and authentication token
-            return Ok(new
+            return Ok(new   
             {
-                Id = user.userID,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
                 Token = tokenString
             });
+        }
+
+        [HttpGet, Authorize]
+        public ActionResult<string> GetUserInformation() {
+            int userId = _userService.getUserId();
+
+            var userInfo = from b in _context.User
+                           where b.userID == userId
+                           select new UserDetailDto()
+                           {
+                               Email = b.Email,
+                               Firstname = b.FirstName,
+                               Lastname = b.LastName
+                           };
+
+            return Ok(userInfo);
         }
 
         [HttpPut, Authorize]
@@ -152,7 +164,7 @@ namespace HightBackend.Controllers
         }
 
         [HttpPost("favourites/{id}"), Authorize]
-        public async Task<ActionResult<Estabilishment>> AddUsersFavourites(int id)
+        public async Task<ActionResult<usersFavourites>> AddUsersFavourites(int id)
         {
             usersFavourites usersFavourites = new usersFavourites();
             usersFavourites.estabilishmentID = id;

@@ -24,8 +24,9 @@ namespace HightBackend.Models.Services
            {
                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
            }
+           int userId = 0;
 
-           int userId = _context.User.Where(u => u.Email == result).FirstOrDefault().userID;
+           userId = _context.User.Where(u => u.Email == result).FirstOrDefault().userID;
 
            return userId;
             
