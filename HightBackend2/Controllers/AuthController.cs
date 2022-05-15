@@ -85,6 +85,7 @@ namespace HightBackend.Controllers
                            where b.userID == userId
                            select new UserDetailDto()
                            {
+                               Id = b.userID,
                                Email = b.Email,
                                Firstname = b.FirstName,
                                Lastname = b.LastName
@@ -182,6 +183,7 @@ namespace HightBackend.Controllers
         {
             var favourites = from b in _context.Estabilishments
                              join f in _context.usersFavourites on b.estabilishmentId equals f.estabilishmentID
+                             where f.userID == _userService.getUserId()
                              select new EstabilishmentDto() {
                                  estabilishmentId = b.estabilishmentId,
                                  typeName = b.type.typeName,
@@ -205,7 +207,11 @@ namespace HightBackend.Controllers
         [HttpDelete("favourites/{id}"), Authorize]
         public async Task<IActionResult> DeleteUsersFavourites(int id)
         {
-            var favourites = await _context.usersFavourites.FindAsync(id);
+            var favourites = (from b in _context.usersFavourites
+                              where b.userID == _userService.getUserId() &&
+                              b.estabilishmentID == id
+                              select b).FirstOrDefault();
+
             if (favourites == null)
             {
                 return NotFound();

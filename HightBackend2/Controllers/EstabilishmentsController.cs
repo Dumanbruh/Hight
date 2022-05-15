@@ -34,11 +34,10 @@ namespace HightBackend.Controllers
             [FromQuery(Name = "sortname")] string sortname,
             [FromQuery(Name = "sortrate")] string sortrate,
             [FromQuery(Name = "page")] int? querypage,
-            [FromQuery(Name = "type")] string type)
+            [FromQuery(Name = "type")] string type,
+            [FromQuery(Name = "top")] int top)
         {
             
-
-
             var estabilishments = from b in _context.Estabilishments
                                   select new EstabilishmentDto()
                                   {
@@ -55,6 +54,10 @@ namespace HightBackend.Controllers
             if (!string.IsNullOrEmpty(s))   
             {
                 estabilishments = estabilishments.Where(b => b.name.Contains(s));
+            }
+
+            if (!string.IsNullOrEmpty(top.ToString())) {
+                return Ok(estabilishments.Take(top));
             }
 
             if (sortname == "asc")
